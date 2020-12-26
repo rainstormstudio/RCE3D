@@ -28,6 +28,7 @@ class Raytracer {
     curandState *d_rand_state;
     Surface** d_list;
     Surface** d_world;
+    float* camera_displacement;
 
     int SCREENWIDTH;
     int SCREENHEIGHT;
@@ -37,7 +38,7 @@ public:
 
     ~Raytracer();
 
-    void update(std::vector<std::vector<std::vector<int>>> &buffer, std::vector<float> delta);
+    void update(std::vector<std::vector<std::vector<int>>> &buffer, float* delta);
 };
 
 #endif

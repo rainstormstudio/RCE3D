@@ -17,8 +17,8 @@
 class Camera {
     point3 lookfrom;
     point3 lookat; 
-    vec3 vup;       // view up
-    float vfov;    // vertical field of view
+    vec3 vup;
+    float vfov;
     float aspect_ratio;
     float aperture;
     float focus_dist;
@@ -66,6 +66,15 @@ public:
         lens_radius = aperture / 2;
         time0 = t0;
         time1 = t1;
+    }
+
+    __device__ void move(float* delta) {
+        lower_left_corner.v[0] += delta[0];
+        lower_left_corner.v[1] += delta[1];
+        lower_left_corner.v[2] += delta[2];
+        origin.v[0] += delta[0];
+        origin.v[1] += delta[1];
+        origin.v[2] += delta[2];
     }
 
     __device__ Ray get_ray(float s, float t) const {

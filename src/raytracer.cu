@@ -71,6 +71,10 @@
         pixel_color[2] = sqrt(pixel_color[2]);
         fb[pixel_index] = pixel_color;
     }
+
+    __global__ void moveCamera(Camera** camera, float* delta) {
+        (*camera)->move(delta);
+    }
     
     __global__ void create_scene(Surface** d_list, Surface** d_world, Camera** d_camera) {
         if (threadIdx.x == 0 && blockIdx.x == 0) {
@@ -97,6 +101,7 @@
 
         // camera
         checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(Camera*)));
+        checkCudaErrors(cudaMalloc((void**)&camera_displacement, 3 * sizeof(float)));
 
         // allocate framebuffer
         checkCudaErrors(cudaMallocManaged((void **)&fb, fb_size));
@@ -116,6 +121,7 @@
         checkCudaErrors(cudaDeviceSynchronize());
         free_scene<<<1, 1>>>(d_list, d_world, d_camera);
         checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaFree(camera_displacement));
         checkCudaErrors(cudaFree(d_list));
         checkCudaErrors(cudaFree(d_world));
         checkCudaErrors(cudaFree(fb));
@@ -123,7 +129,11 @@
         cudaDeviceReset();
     }
 
-    void Raytracer::update(std::vector<std::vector<std::vector<int>>> &buffer, std::vector<float> delta) {
+    void Raytracer::update(std::vector<std::vector<std::vector<int>>> &buffer, float* delta) {
+        cudaMemcpy(camera_displacement, delta, 3 * sizeof(float), cudaMemcpyHostToDevice);
+        moveCamera<<<1, 1>>>(d_camera, camera_displacement);
+        checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaDeviceSynchronize());
         dim3 blocks(SCREENWIDTH / block_width + 1, SCREENHEIGHT / block_height + 1);
         dim3 threads(block_width, block_height);
         render_init<<<blocks, threads>>>(SCREENWIDTH, SCREENHEIGHT, d_rand_state);

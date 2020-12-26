@@ -19,8 +19,29 @@
                 screen[i][j] = std::vector<int>(3, 0);
             }
         }
-        std::vector<float> delta = std::vector<float>(3, 0.0);
+        float* delta = (float*)malloc(3 * sizeof(float));
+        memset(delta, 0.0, 3 * sizeof(float));
+        if (getKeyState(SDLK_s).hold) {
+            delta[2] += deltaTime * 2.0;
+        } 
+        if (getKeyState(SDLK_w).hold) {
+            delta[2] -= deltaTime * 2.0;
+        }
+        if (getKeyState(SDLK_d).hold) {
+            delta[0] += deltaTime * 2.0;
+        } 
+        if (getKeyState(SDLK_a).hold) {
+            delta[0] -= deltaTime * 2.0;
+        }
+        if (getKeyState(SDLK_SPACE).hold) {
+            delta[1] += deltaTime * 2.0;
+        } 
+        if (getKeyState(SDLK_c).hold) {
+            delta[1] -= deltaTime * 2.0;
+        }
+        //delta[1] = deltaTime * 1.0f;
         raytracer->update(screen, delta);
+        delete delta;
         for (int i = 0; i < SCREENWIDTH; i ++) {
             for (int j = 0; j < SCREENHEIGHT; j ++) {
                 draw(i, j, ' ', {0, 0, 0, 0}, {
