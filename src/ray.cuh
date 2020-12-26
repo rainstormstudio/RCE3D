@@ -18,13 +18,15 @@
 class Ray {
     point3 orig;
     vec3 dir;
+    float time;
 public:
     __device__ Ray() {}
-    __device__ Ray(const point3& origin, const vec3& direction)
-        : orig{origin}, dir{direction} {}
+    __device__ Ray(const point3& origin, const vec3& direction, float time = 0.0f)
+        : orig{origin}, dir{direction}, time{time} {}
 
     __device__ point3 origin() const { return orig; }
     __device__ vec3 direction() const { return dir; }
+    __device__ float getTime() const { return time; }
 
     __device__ point3 at(float t) const {
         return orig + t * dir;

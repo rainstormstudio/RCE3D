@@ -18,11 +18,11 @@
 class Sphere : public Surface {
     point3 center;
     float radius;
-    //std::shared_ptr<Material> material;
+    Material *material;
 public:
     __device__ Sphere() {}
-    __device__ Sphere(point3 cen, float r) 
-        : center{cen}, radius{r} {}
+    __device__ Sphere(point3 cen, float r, Material *material) 
+        : center{cen}, radius{r}, material{material} {}
 
     __device__ virtual bool hit(const Ray& ray, float t_min, float t_max, Hit_record& rec) const override;
 };
@@ -42,7 +42,7 @@ __device__ bool Sphere::hit(const Ray& ray, float t_min, float t_max, Hit_record
             rec.p = ray.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(ray, outward_normal);
-            //rec.material = material;
+            rec.material = material;
             return true;
         }
 
@@ -52,7 +52,7 @@ __device__ bool Sphere::hit(const Ray& ray, float t_min, float t_max, Hit_record
             rec.p = ray.at(rec.t);
             vec3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(ray, outward_normal);
-            //rec.material = material;
+            rec.material = material;
             return true;
         }
     }

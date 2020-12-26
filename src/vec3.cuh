@@ -40,6 +40,20 @@ public:
         return *this;
     }
 
+    __host__ __device__ inline vec3& operator-=(const vec3 &vec) {
+        v[0] -= vec.v[0];
+        v[1] -= vec.v[1];
+        v[2] -= vec.v[2];
+        return *this;
+    }
+
+    __host__ __device__ inline vec3& operator*=(const vec3 &vec) {
+        v[0] *= vec.v[0];
+        v[1] *= vec.v[1];
+        v[2] *= vec.v[2];
+        return *this;
+    }
+
     __host__ __device__ inline vec3& operator*=(const float k) {
         v[0] *= k;
         v[1] *= k;
@@ -107,7 +121,7 @@ __host__ __device__ inline vec3 cross(const vec3 &a, const vec3 &b) {
 __host__ __device__ inline vec3 unit_vector(const vec3 &v) {
     return v / v.length();
 }
-
+/*
 __host__ __device__ inline vec3 reflect(const vec3& v, const vec3& n) {
     return v - 2*dot(v, n) * n;
 }
@@ -117,6 +131,6 @@ __host__ __device__ inline vec3 refract(const vec3& uv, const vec3& n, float eta
     vec3 ray_out_perp = etai_over_etat * (uv + cos_theta * n);
     vec3 ray_out_parallel = -sqrt(fabs(1.0 - ray_out_perp.length_squared())) * n;
     return ray_out_perp + ray_out_parallel;
-}
+}*/
 
 #endif

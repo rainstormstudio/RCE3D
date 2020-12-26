@@ -5,6 +5,7 @@
 #include "surface.cuh"
 #include "surface_list.cuh"
 #include "sphere.cuh"
+#include "material.cuh"
 #include "camera.cuh"
 
     void Raytracer::check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
@@ -16,24 +17,21 @@
             exit(99);
         }
     }
-
-    __device__ vec3 random_in_unit_sphere(curandState* local_rand_state) {
-        vec3 p;
-        do {
-            p = 2.0f * RANDVEC3 - vec3(1, 1, 1);
-        } while (p.length_squared() >= 1.0f);
-        return p;
-    }
     
     __device__ color ray_trace(const Ray& ray, Surface** world, int max_depth, curandState* local_rand_state) {
         Ray current_ray = ray;
-        float current_attenuation = 1.0f;
+        vec3 current_attenuation = vec3(1.0, 1.0, 1.0);
         for (int i = 0; i < max_depth; i ++) {
             Hit_record rec;
             if ((*world)->hit(current_ray, 0.0001, FLT_MAX, rec)) {
-                vec3 target = rec.p + rec.normal + random_in_unit_sphere(local_rand_state);
-                current_attenuation *= 0.5f;
-                current_ray = Ray(rec.p, target - rec.p);
+                Ray scattered;
+                vec3 attenuation;
+                if (rec.material->scatter(current_ray, rec, attenuation, scattered, local_rand_state)) {
+                    current_attenuation *= attenuation;
+                    current_ray = scattered;
+                } else {
+                    return vec3(0.0, 0.0, 0.0);
+                }
             } else {
                 vec3 unit_direction = unit_vector(current_ray.direction());
                 auto t = 0.5f * (unit_direction.y() + 1.0f);
@@ -76,9 +74,11 @@
     
     __global__ void create_scene(Surface** d_list, Surface** d_world, Camera** d_camera) {
         if (threadIdx.x == 0 && blockIdx.x == 0) {
-            *(d_list + 0) = new Sphere(vec3(0, 0, -1), 0.5);
-            *(d_list + 1) = new Sphere(vec3(0, -100.5, -1), 100);
-            *d_world = new Surface_list(d_list, 2);
+            *(d_list + 0) = new Sphere(vec3(0, 0, -1), 0.5, new Diffuse(vec3(0.8, 0.3, 0.3)));
+            *(d_list + 1) = new Sphere(vec3(0, -100.5, -1), 100, new Diffuse(vec3(0.8, 0.8, 0.0)));
+            *(d_list + 2) = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 1.0));
+            *(d_list + 3) = new Sphere(vec3(-1, 0, -1), 0.5, new Metal(vec3(0.8, 0.8, 0.8), 0.3));
+            *d_world = new Surface_list(d_list, 4);
             *d_camera = new Camera();
         }
     }

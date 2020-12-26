@@ -20,7 +20,7 @@ class Material;
 struct Hit_record {
     point3 p;
     vec3 normal;
-    Material** material;
+    Material* material;
     float t;
     bool front_face;
 

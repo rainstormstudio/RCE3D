@@ -9,14 +9,14 @@ class Camera;
 class Surface;
 
 #define checkCudaErrors(val) check_cuda( (val), #val, __FILE__, __LINE__ )
-#define RANDVEC3 vec3(curand_uniform(local_rand_state), curand_uniform(local_rand_state), curand_uniform(local_rand_state))
+//#define RANDVEC3 vec3(curand_uniform(local_rand_state), curand_uniform(local_rand_state), curand_uniform(local_rand_state))
 
 class Raytracer {
     void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line);
 
     const double aspect_ratio = 16.0 / 8.0;
-    const int SAMPLES_PER_PIXEL = 50;
-    const int MAX_DEPTH = 50;
+    const int SAMPLES_PER_PIXEL = 20;
+    const int MAX_DEPTH = 20;
 
     int num_pixels;
     size_t fb_size;

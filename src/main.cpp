@@ -1,7 +1,7 @@
 #include "RCE3D.hpp"
 
-const int SCREENWIDTH = 80 * 3;
-const int SCREENHEIGHT = 40 * 3;
+const int SCREENWIDTH = 80 * 2;
+const int SCREENHEIGHT = 40 * 2;
 
 int main() {
     RCE3D app(SCREENWIDTH, SCREENHEIGHT);
