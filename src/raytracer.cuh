@@ -20,8 +20,8 @@ class Raytracer {
 
     int num_pixels;
     size_t fb_size;
-    const int block_width = 8;
-    const int block_height = 8;
+    const int block_width = 32;
+    const int block_height = 32;
 
     Camera** d_camera;
     vec3 *fb;
