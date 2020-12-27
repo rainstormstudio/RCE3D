@@ -3,6 +3,7 @@
 RCE3D stands for Rainstorm Console Engine 3D but this is actually a simple real-time ray tracer. It uses [RCEngine](https://github.com/rainstormstudio/RCEngine), meaning that it only uses SDL2 for graphics. However, CUDA is used for optimizing the performance of the ray tracer.
 ## Screenshots
 ![screenshot 1](screenshots/screenshot1.png)
+![screenshot 2](screenshots/screenrecord1.gif)
 ## License
 The MIT License (MIT)
 
