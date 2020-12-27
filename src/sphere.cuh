@@ -18,8 +18,8 @@
 class Sphere : public Surface {
     point3 center;
     float radius;
-    Material *material;
 public:
+    Material *material;
     __device__ Sphere() {}
     __device__ Sphere(point3 cen, float r, Material *material) 
         : center{cen}, radius{r}, material{material} {}
@@ -29,29 +29,25 @@ public:
 
 __device__ bool Sphere::hit(const Ray& ray, float t_min, float t_max, Hit_record& rec) const {
     vec3 oc = ray.origin() - center;
-    auto a = ray.direction().length_squared();
-    auto half_b = dot(oc, ray.direction());
-    auto c = oc.length_squared() - radius * radius;
-    auto discriminant = half_b * half_b - a * c;
+    auto a = dot(ray.direction(), ray.direction());
+    auto b = dot(oc, ray.direction());
+    auto c = dot(oc, oc) - radius * radius;
+    auto discriminant = b * b - a * c;
 
     if (discriminant > 0) {
-        auto root = sqrt(discriminant);
-        auto temp = (-half_b - root) / a;
-        if (temp > t_min && temp < t_max) {
+        float temp = (-b - sqrt(discriminant))/a;
+        if (temp < t_max && temp > t_min) {
             rec.t = temp;
             rec.p = ray.at(rec.t);
-            vec3 outward_normal = (rec.p - center) / radius;
-            rec.set_face_normal(ray, outward_normal);
+            rec.normal = (rec.p - center) / radius;
             rec.material = material;
             return true;
         }
-
-        temp = (-half_b + root) / a;
-        if (temp > t_min && temp < t_max) {
+        temp = (-b + sqrt(discriminant)) / a;
+        if (temp < t_max && temp > t_min) {
             rec.t = temp;
             rec.p = ray.at(rec.t);
-            vec3 outward_normal = (rec.p - center) / radius;
-            rec.set_face_normal(ray, outward_normal);
+            rec.normal = (rec.p - center) / radius;
             rec.material = material;
             return true;
         }

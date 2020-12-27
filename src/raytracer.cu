@@ -78,18 +78,21 @@
     
     __global__ void create_scene(Surface** d_list, Surface** d_world, Camera** d_camera) {
         if (threadIdx.x == 0 && blockIdx.x == 0) {
-            *(d_list + 0) = new Sphere(vec3(0, 0, -1), 0.5, new Diffuse(vec3(0.8, 0.3, 0.3)));
+            *(d_list + 0) = new Sphere(vec3(0, 0, -1), 0.5, new Diffuse(vec3(0.1, 0.2, 0.5)));
             *(d_list + 1) = new Sphere(vec3(0, -100.5, -1), 100, new Diffuse(vec3(0.8, 0.8, 0.0)));
-            *(d_list + 2) = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 1.0));
-            *(d_list + 3) = new Sphere(vec3(-1, 0, -1), 0.5, new Metal(vec3(0.8, 0.8, 0.8), 0.3));
-            *d_world = new Surface_list(d_list, 4);
-            *d_camera = new Camera(vec3(0.0, 0.0, 0.0), vec3(1, 0, -1), vec3(0, 1, 0), 20, 2.0, 0.1, 10.0, 0.0, 1.0);
+            *(d_list + 2) = new Sphere(vec3(1, 0, -1), 0.5, new Metal(vec3(0.8, 0.6, 0.2), 0.0));
+            *(d_list + 3) = new Sphere(vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
+            *(d_list + 4) = new Sphere(vec3(-1, 0, -1), -0.45, new Dielectric(1.5));
+            *d_world = new Surface_list(d_list, 5);
+            *d_camera = new Camera(vec3(-2, 0, 1), vec3(0, 0, -1), vec3(0, 1, 0), 30, 2.0, 0.1, 10.0, 0.0, 1.0);
         }
     }
     
     __global__ void free_scene(Surface** d_list, Surface** d_world, Camera** d_camera) {
-        delete *(d_list + 0);
-        delete *(d_list + 1);
+        for (int i = 0; i < 5; i ++) {
+            delete ((Sphere*)d_list[i])->material;
+            delete d_list[i];
+        }
         delete *(d_world);
         delete *(d_camera);
     }
