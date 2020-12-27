@@ -69,12 +69,30 @@ public:
     }
 
     __device__ void move(float* delta) {
-        lower_left_corner.v[0] += delta[0];
-        lower_left_corner.v[1] += delta[1];
-        lower_left_corner.v[2] += delta[2];
-        origin.v[0] += delta[0];
-        origin.v[1] += delta[1];
-        origin.v[2] += delta[2];
+        w = unit_vector(lookfrom - lookat);
+        lookfrom += delta[2] * w;
+        lookat += delta[2] * w;
+        lookfrom.v[1] += delta[1];
+        lookat.v[1] += delta[1];
+        float x = lookfrom.v[0] + (lookat.v[0] - lookfrom.v[0]) * cos(delta[0]) - (lookat.v[2] - lookfrom.v[2]) * sin(delta[0]);
+        float z = lookfrom.v[2] + (lookat.v[0] - lookfrom.v[0]) * sin(delta[0]) + (lookat.v[2] - lookfrom.v[2]) * cos(delta[0]);
+        lookat.v[0] = x;
+        lookat.v[2] = z;
+
+        auto theta = degrees_to_radians(vfov);
+        auto h = tan(theta / 2);
+        auto viewport_height = 2.0 * h;
+        auto viewport_width = aspect_ratio * viewport_height;
+        
+        w = unit_vector(lookfrom - lookat);
+        u = unit_vector(cross(vup, w));
+        v = cross(w, u);
+
+        origin = lookfrom;
+        horizontal = focus_dist * viewport_width * u;
+        vertical = focus_dist * viewport_height * v;
+        lower_left_corner = origin - horizontal/2 - vertical/2 - focus_dist * w;
+
     }
 
     __device__ Ray get_ray(float s, float t) const {

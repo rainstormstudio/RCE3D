@@ -66,7 +66,7 @@ public:
     }
 
     __host__ __device__ inline float length() const {
-        return std::sqrt(length_squared());
+        return std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     }
 
     __host__ __device__ inline float length_squared() const {

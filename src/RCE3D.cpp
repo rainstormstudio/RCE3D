@@ -28,10 +28,10 @@
             delta[2] -= deltaTime * 2.0;
         }
         if (getKeyState(SDLK_d).hold) {
-            delta[0] += deltaTime * 2.0;
+            delta[0] += deltaTime * 1.0;
         } 
         if (getKeyState(SDLK_a).hold) {
-            delta[0] -= deltaTime * 2.0;
+            delta[0] -= deltaTime * 1.0;
         }
         if (getKeyState(SDLK_SPACE).hold) {
             delta[1] += deltaTime * 2.0;
