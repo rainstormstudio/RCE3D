@@ -104,7 +104,7 @@
 
         // camera
         checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(Camera*)));
-        checkCudaErrors(cudaMalloc((void**)&camera_displacement, 3 * sizeof(float)));
+        checkCudaErrors(cudaMalloc((void**)&camera_displacement, 5 * sizeof(float)));
 
         // allocate framebuffer
         checkCudaErrors(cudaMallocManaged((void **)&fb, fb_size));
@@ -133,7 +133,7 @@
     }
 
     void Raytracer::update(std::vector<std::vector<std::vector<int>>> &buffer, float* delta) {
-        cudaMemcpy(camera_displacement, delta, 3 * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy(camera_displacement, delta, 5 * sizeof(float), cudaMemcpyHostToDevice);
         moveCamera<<<1, 1>>>(d_camera, camera_displacement);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());

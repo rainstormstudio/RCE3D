@@ -34,6 +34,11 @@
         cursorInput = std::vector<bool>(TOTAL_CURSOR_STATES, false);
         prevCursorInput = std::vector<bool>(TOTAL_CURSOR_STATES, false);
         cursorState = std::vector<KeyState>(TOTAL_CURSOR_STATES, {false, false, false});
+
+        cursorPosX = 0;
+        cursorPosY = 0;
+        relCursorPosX = 0;
+        relCursorPosY = 0;
     }
 
     bool RCEngine::createConsole(std::string tilesetPath, int numSrcRows, int numSrcCols, int rows, int cols, int fontWidth, int fontHeight) {
@@ -269,6 +274,9 @@
                 double deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(time_b - time_a).count() / 1000000.0f;
                 time_a = time_b;
 
+                relCursorPosX = 0;
+                relCursorPosY = 0;
+
                 while (SDL_PollEvent(&event)) {
                     switch (event.type) {
                         case SDL_QUIT: {
@@ -286,6 +294,8 @@
                         case SDL_MOUSEMOTION: {
                             cursorPosX = event.motion.x / cellWidth;
                             cursorPosY = event.motion.y / cellHeight;
+                            relCursorPosX = event.motion.xrel;
+                            relCursorPosY = event.motion.yrel;
                             break;
                         }
                         case SDL_MOUSEBUTTONDOWN: {

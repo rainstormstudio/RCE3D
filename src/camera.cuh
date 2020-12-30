@@ -31,6 +31,18 @@ class Camera {
     float lens_radius;
     float time0, time1;
 
+    __device__ inline vec3 rotateYaw(vec3 center, vec3 x, float angle) {
+        return vec3(center.v[0] + (x.v[0] - center.v[0]) * cos(angle) - (x.v[2] - center.v[2]) * sin(angle),
+                    x.v[1],
+                    center.v[2] + (x.v[0] - center.v[0]) * sin(angle) + (x.v[2] - center.v[2]) * cos(angle));
+    }
+
+    __device__ inline vec3 rotatePitch(vec3 center, vec3 x, float angle) {
+        return vec3(center.v[0] + (x.v[0] - center.v[0]) * cos(angle) - (x.v[1] - center.v[1]) * sin(angle),
+                    center.v[1] + (x.v[0] - center.v[0]) * sin(angle) + (x.v[1] - center.v[1]) * cos(angle),
+                    x.v[2]);
+    }
+
 public:
     __device__ Camera() {
         lower_left_corner = vec3(-2.0, -1.0, -1.0);
@@ -69,15 +81,17 @@ public:
     }
 
     __device__ void move(float* delta) {
+        lookat = rotateYaw(lookfrom, lookat, degrees_to_radians(delta[3]));
+        lookat = rotatePitch(lookfrom, lookat, degrees_to_radians(-delta[4]));
+
         w = unit_vector(lookfrom - lookat);
         lookfrom += delta[2] * w;
         lookat += delta[2] * w;
         lookfrom.v[1] += delta[1];
         lookat.v[1] += delta[1];
-        float x = lookfrom.v[0] + (lookat.v[0] - lookfrom.v[0]) * cos(delta[0]) - (lookat.v[2] - lookfrom.v[2]) * sin(delta[0]);
-        float z = lookfrom.v[2] + (lookat.v[0] - lookfrom.v[0]) * sin(delta[0]) + (lookat.v[2] - lookfrom.v[2]) * cos(delta[0]);
-        lookat.v[0] = x;
-        lookat.v[2] = z;
+        u = unit_vector(cross(vup, w));
+        lookfrom += delta[0] * u;
+        lookat += delta[0] * u;
 
         auto theta = degrees_to_radians(vfov);
         auto h = tan(theta / 2);

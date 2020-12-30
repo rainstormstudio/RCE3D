@@ -7,6 +7,7 @@
 
     bool RCE3D::start() {
         raytracer = new Raytracer(SCREENWIDTH, SCREENHEIGHT);
+        setRelativeCursor(true);
         return true;
     }
 
@@ -19,8 +20,8 @@
                 screen[i][j] = std::vector<int>(3, 0);
             }
         }
-        float* delta = (float*)malloc(3 * sizeof(float));
-        memset(delta, 0.0, 3 * sizeof(float));
+        float* delta = (float*)malloc(5 * sizeof(float));
+        memset(delta, 0.0, 5 * sizeof(float));
         if (getKeyState(SDLK_s).hold) {
             delta[2] += deltaTime * 2.0;
         } 
@@ -39,7 +40,8 @@
         if (getKeyState(SDLK_c).hold) {
             delta[1] -= deltaTime * 2.0;
         }
-        //delta[1] = deltaTime * 1.0f;
+        delta[3] += getRelCursorX() * deltaTime * 5.0;
+        delta[4] += getRelCursorY() * deltaTime * 5.0;
         raytracer->update(screen, delta);
         delete delta;
         for (int i = 0; i < SCREENWIDTH; i ++) {

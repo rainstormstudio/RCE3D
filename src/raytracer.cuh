@@ -15,7 +15,7 @@ class Raytracer {
     void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line);
 
     const double aspect_ratio = 16.0 / 8.0;
-    const int SAMPLES_PER_PIXEL = 50;
+    const int SAMPLES_PER_PIXEL = 20;
     const int MAX_DEPTH = 30;
 
     int num_pixels;

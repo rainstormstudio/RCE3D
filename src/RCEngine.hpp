@@ -190,6 +190,8 @@ protected:
     std::vector<KeyState> cursorState;
     int cursorPosX;
     int cursorPosY;
+    int relCursorPosX;
+    int relCursorPosY;
 
 private:
     SDL_Window* window;
@@ -355,6 +357,41 @@ public:
      */
     int getCursorY() const {
         return cursorPosY;
+    }
+
+    /**
+     * @brief Get the relative motion of cursor
+     * of x coordinate
+     * 
+     * @return int 
+     */
+    int getRelCursorX() const {
+        return relCursorPosX;
+    }
+
+    /**
+     * @brief Get the relative motion of cursor
+     * of y coordinate
+     * 
+     * @return int 
+     */
+    int getRelCursorY() const {
+        return relCursorPosY;
+    }
+
+    /**
+     * @brief Set relative cursor mode
+     * when it's on, the cursor is hidden and 
+     * only relCursorPos will be active
+     * 
+     * @param value 
+     */
+    void setRelativeCursor(bool value) {
+        if (value) {
+            SDL_SetRelativeMouseMode(SDL_TRUE);
+        } else {
+            SDL_SetRelativeMouseMode(SDL_FALSE);
+        }
     }
 
     /**
